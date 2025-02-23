@@ -2,9 +2,11 @@ import streamlit as st
 from streamlit_drawable_canvas import st_canvas
 import pytesseract
 from gtts import gTTS
+import gtts
 import os
 from PIL import Image
 import numpy as np
+from api.voice_clone import voice_clone
 
 
 def get_hand_text_from_canvas():
@@ -35,22 +37,39 @@ def get_hand_text_from_canvas():
 
         # Use pytesseract to extract text
         text = pytesseract.image_to_string(img)
-
+        languages = gtts.lang.tts_langs()
+        language = st.selectbox("Select language", list(languages.values()))
+        st.write("Selected language:", language)
         st.write("Recognized text:", text)
+
+        # use custom voice cloning model to convert text to speech
+        if st.button("Use custom voice"):
+            # tts(text, language)
+            audio_value = st.audio_input("Record a voice message")
+            if audio_value:
+                st.audio(audio_value)
+                print(f"audio_value: {audio_value}")
+            output = voice_clone(audio_value, text)
+            print(f"output:{output}")
+            st.audio(output)
+            # print("Voice clone not implemented yet")
 
         # Convert text to speech (TTS)
         if st.button("Convert to Speech"):
-            tts(text)
-
-    # Clear canvas button
-    if st.button("Clear Canvas"):
-        st.session_state.canvas_data = None
-        st.rerun()
+            language = select_language(language, languages)
+            tts(text, language)
 
 
-def tts(text):
+def select_language(language, languages):
+    # use the selected language
+    for key, value in languages.items():
+        if value == language:
+            return key
+
+
+def tts(text, language):
     # Implement your TTS model here
     st.write("Converting to speech:", text)
-    tts = gTTS(text)
+    tts = gTTS(text, lang=language)
     tts.save("output.mp3")
     st.audio("output.mp3")
