@@ -43,12 +43,12 @@ def get_hand_text_from_canvas():
         st.write("Recognized text:", text)
 
         # use custom voice cloning model to convert text to speech
-        st.button(
-            "Use custom voice",
-            type="primary",
-            on_click=voice_clone_with_resemble,
-            args=(text, language),
-        )
+        # st.button(
+        #     "Use custom voice",
+        #     type="primary",
+        #     on_click=voice_clone_with_resemble,
+        #     args=(text, language),
+        # )
         audio_value = st.audio_input("Record a voice message")
         print(f"audio_value: {audio_value}")
         if audio_value:
